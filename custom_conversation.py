@@ -1,7 +1,7 @@
 import os
 import time
 import json
-from elevenlabs import stream, save, set_api_key
+from elevenlabs import generate, save, set_api_key
 from elevenlabs.api import Voices
 from dotenv import load_dotenv
 
@@ -164,7 +164,7 @@ class ConversationGenerator:
             
             try:
                 # Generate audio using streaming
-                audio_stream = stream(
+                audio_stream = generate(
                     text=text,
                     voice=voice,
                     model="eleven_multilingual_v2",
