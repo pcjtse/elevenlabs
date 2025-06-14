@@ -12,6 +12,7 @@ This application uses the ElevenLabs API to generate realistic audio conversatio
 - Combine individual audio files into a single conversation file
 - **NEW:** Stream audio in real-time using ElevenLabs' streaming API
 - **NEW:** Live playback of conversations with PyAudio
+- **NEW:** Web UI for streaming audio via LiveConversationPlayer
 
 ## Requirements
 

@@ -1,4 +1,5 @@
 elevenlabs==0.2.27
 python-dotenv==1.0.0
 pydub==0.25.1
-pyaudio==0.2.13 
+pyaudio==0.2.13
+flask==2.3.2
