@@ -1,81 +1,66 @@
 import os
-from flask import Flask, render_template_string, request, Response
+
+from flask import Flask, Response, request, render_template_string
 from dotenv import load_dotenv
 from elevenlabs import stream, set_api_key
-from elevenlabs.api import Voices
+from stream_conversation import LiveConversationPlayer
 
-# Load API key from .env
 load_dotenv()
 api_key = os.getenv("ELEVENLABS_API_KEY")
 if not api_key:
-    raise RuntimeError("ELEVENLABS_API_KEY not set in environment")
+    raise RuntimeError("ELEVENLABS_API_KEY not set")
 set_api_key(api_key)
 
-# Initialize Flask app
+# Use LiveConversationPlayer to fetch available voices
+player = LiveConversationPlayer()
+voices = player.get_available_voices()
+
 app = Flask(__name__)
 
-# Fetch available voices once
-try:
-    voices = Voices.from_api()
-except Exception:
-    voices = []
-
-VOICE_NAMES = [v.name for v in voices] if voices else ["Rachel", "Daniel"]
-
-HTML_TEMPLATE = """
+INDEX_HTML = """
 <!doctype html>
-<html>
+<html lang='en'>
 <head>
-    <title>ElevenLabs Web Conversation</title>
+<meta charset='utf-8'>
+<title>Live Conversation Player</title>
 </head>
 <body>
-    <h1>ElevenLabs Web Conversation</h1>
-    <form id="speech-form">
-        <textarea id="text" rows="4" cols="60" placeholder="Enter text here"></textarea><br>
-        <label for="voice">Voice:</label>
-        <select id="voice">
-        {% for name in voice_names %}
-            <option value="{{ name }}">{{ name }}</option>
-        {% endfor %}
-        </select>
-        <button type="submit">Speak</button>
-    </form>
-    <audio id="player" controls></audio>
-    <script>
-    document.getElementById('speech-form').addEventListener('submit', function(e){
-        e.preventDefault();
-        const text = document.getElementById('text').value;
-        const voice = document.getElementById('voice').value;
-        const player = document.getElementById('player');
-        player.src = '/synthesize?text=' + encodeURIComponent(text) + '&voice=' + encodeURIComponent(voice);
-        player.play();
-    });
-    </script>
+<h1>Live Conversation Player</h1>
+<textarea id='text' rows='4' cols='50' placeholder='Enter text here'></textarea><br>
+<select id='voice'>
+{% for v in voices %}
+<option value='{{ v.voice_id }}'>{{ v.name }}</option>
+{% endfor %}
+</select>
+<button onclick='play()'>Play</button>
+<audio id='audio' controls></audio>
+<script>
+function play() {
+  const text = document.getElementById('text').value;
+  const voice = document.getElementById('voice').value;
+  const audio = document.getElementById('audio');
+  audio.src = '/stream?text=' + encodeURIComponent(text) + '&voice=' + voice;
+  audio.play();
+}
+</script>
 </body>
 </html>
 """
 
 @app.route('/')
 def index():
-    return render_template_string(HTML_TEMPLATE, voice_names=VOICE_NAMES)
 
-@app.route('/synthesize')
-def synthesize():
+    return render_template_string(INDEX_HTML, voices=voices)
+
+@app.route('/stream')
+def stream_audio():
     text = request.args.get('text', '')
-    voice_name = request.args.get('voice', VOICE_NAMES[0])
-    voice = next((v for v in voices if v.name == voice_name), voice_name)
-
-    audio_stream = stream(
-        text=text,
-        voice=voice,
-        model="eleven_multilingual_v2",
-        stream=True
-    )
-
+    voice_id = request.args.get('voice')
+    selected = next((v for v in voices if v.voice_id == voice_id), voices[0])
+    audio_stream = stream(text=text, voice=selected, model="eleven_multilingual_v2", stream=True)
     def generate():
         for chunk in audio_stream:
             yield chunk
-
     return Response(generate(), mimetype='audio/mpeg')
 
 if __name__ == '__main__':
