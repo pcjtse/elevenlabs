@@ -1,6 +1,6 @@
 import os
 import time
-from elevenlabs import stream, save, set_api_key
+from elevenlabs import generate, save, set_api_key
 from elevenlabs.api import Voices
 from dotenv import load_dotenv
 
@@ -65,7 +65,7 @@ def generate_conversation(conversation_list, output_dir="audio_output", play_aud
         
         try:
             # Generate audio using streaming
-            audio_stream = stream(
+            audio_stream = generate(
                 text=text,
                 voice=voice,
                 model="eleven_multilingual_v2",

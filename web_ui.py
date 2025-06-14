@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, Response, request, render_template_string
 from dotenv import load_dotenv
-from elevenlabs import stream, set_api_key
+from elevenlabs import generate, set_api_key
 from stream_conversation import LiveConversationPlayer
 
 load_dotenv()
@@ -57,11 +57,11 @@ def stream_audio():
     text = request.args.get('text', '')
     voice_id = request.args.get('voice')
     selected = next((v for v in voices if v.voice_id == voice_id), voices[0])
-    audio_stream = stream(text=text, voice=selected, model="eleven_multilingual_v2", stream=True)
-    def generate():
+    audio_stream = generate(text=text, voice=selected, model="eleven_multilingual_v2", stream=True)
+    def generate_chunks():
         for chunk in audio_stream:
             yield chunk
-    return Response(generate(), mimetype='audio/mpeg')
+    return Response(generate_chunks(), mimetype='audio/mpeg')
 
 if __name__ == '__main__':
     app.run(debug=True)

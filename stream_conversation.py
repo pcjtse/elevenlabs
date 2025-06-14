@@ -5,7 +5,7 @@ import pyaudio
 import wave
 import io
 import tempfile
-from elevenlabs import stream, set_api_key
+from elevenlabs import generate, set_api_key
 from elevenlabs.api import Voices
 from dotenv import load_dotenv
 
@@ -176,7 +176,7 @@ class LiveConversationPlayer:
             
             try:
                 # Generate audio using streaming
-                audio_stream = stream(
+                audio_stream = generate(
                     text=text,
                     voice=voice,
                     model="eleven_multilingual_v2",
@@ -191,7 +191,7 @@ class LiveConversationPlayer:
                 # Save audio if directory specified
                 if save_dir:
                     # Re-generate the audio for saving (since we already consumed the stream)
-                    audio_stream = stream(
+                    audio_stream = generate(
                         text=text,
                         voice=voice,
                         model="eleven_multilingual_v2",
