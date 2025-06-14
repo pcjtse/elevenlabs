@@ -90,6 +90,17 @@ This provides a specialized player that:
 3. Plays the conversation with real-time audio streaming and playback
 4. Optionally saves the audio files while playing
 
+### Web UI (Live Streaming)
+
+You can also experiment directly from your browser:
+
+```bash
+python web_ui.py
+```
+
+Open `http://localhost:5000` and you'll see a simple page where you can type
+text, pick a voice and immediately stream the generated audio.
+
 ### Combining Audio Files
 
 After generating individual audio files, you can combine them into a single conversation file:

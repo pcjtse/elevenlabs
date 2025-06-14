@@ -1,4 +1,5 @@
 import os
+
 from flask import Flask, Response, request, render_template_string
 from dotenv import load_dotenv
 from elevenlabs import stream, set_api_key
@@ -48,6 +49,7 @@ function play() {
 
 @app.route('/')
 def index():
+
     return render_template_string(INDEX_HTML, voices=voices)
 
 @app.route('/stream')
