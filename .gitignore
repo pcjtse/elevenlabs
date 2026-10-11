@@ -1,2 +1,17 @@
 .env
 __pycache__/stream_conversation.cpython-311.pyc
+
+# Secrets, local agent files and build output
+CLAUDE.md
+.env.*
+*.pem
+*.key
+*.p12
+.DS_Store
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+.venv/
+venv/
+!.env.example
